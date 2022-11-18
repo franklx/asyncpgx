@@ -57,17 +57,10 @@ class QueryParamsDictConverter(QueryParamsConverter):
     def prepare_asyncpg_args(self, original_args: typing.Dict, params_order_list: typing.List) -> typing.List:
         """Prepare asyncpg method arguments."""
         asyncpg_args = []
-        used_arguments = set()
         for param in params_order_list:
             try:
                 asyncpg_args.append(original_args[param])
             except KeyError as exc:
                 raise exceptions.MissingRequiredArgumentError(f'Missing required argument: {param}') from exc
-
-            used_arguments.add(param)
-
-        if len(used_arguments) != len(original_args):
-            unused_arguments = set(original_args.keys()).difference(used_arguments)
-            raise exceptions.UnusedArgumentsError(f'Arguments: {unused_arguments} are unused')
 
         return asyncpg_args
